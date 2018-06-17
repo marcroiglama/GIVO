@@ -1,0 +1,188 @@
+
+# ELASTIC DOCUMENTATION
+
+----------------------------------------------------------------------------
+#run as a DAEMON inside the elasticsearch folder:
+./bin/elasticsearch -d
+curl 'http://localhost:9200/?pretty' 
+ps -aux | grep "elastic"/
+----------------------------------------------------------------------------
+                        "format" : ["yyyy-MM-dd'"'T'"'HH:mm:ss.SSSZ"]
+#create a new index (it's possible to define some parameters inside)
+curl -XPUT 'localhost:9200/test/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "sampling_time": {
+                        "type": "date"
+                    },
+                    "variable": {
+                        "type": "text"
+                    },
+                    "bike": {
+                        "type":"integer"
+                    },
+                    "result": {
+                        "type":"text"
+                    },
+                    "location": {
+                        "type":"text"
+                    }
+            }
+        }
+    }
+}
+'
+#delete an index
+curl -XDELETE 'localhost:9200/raw_sensors?pretty'
+
+#see index that already exists
+curl 'localhost:9200/test?pretty'
+
+#see all created index
+curl "localhost:9200/_cat/indices?v"
+
+#see the mapping and formats
+curl -XGET 'localhost:9200/pivoted_sensors/_mapping/IoT?pretty'
+
+#copy a index, CREATE THE INDEX WHERE COPY FILES
+curl -XPOST 'localhost:9200/_reindex?pretty' -H 'Content-Type: application/json' -d'
+{
+  "source": {
+    "index": "raw_sensors"
+  },
+  "dest": {
+    "index": "copy_raw_sensors"
+  }
+}
+'
+
+curl -XPOST 'localhost:9200/copy_raw_sensors/IoT/location/type/_update' -H 'Content-Type: application/json' -d '{
+    "script" : "ctx._source.remove(\"name_of_field\")"
+}'
+
+----------------------------------------------------------------------------
+#basic python 
+from elasticsearch import Elasticsearch
+es  = Elasticsearch()
+
+
+----------------------------------------------------------------------------
+'''QUERY'S'''
+
+#query general
+curl -XGET 'localhost:9200/test/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": { "match_all": {} },
+  "size": 10
+}
+'
+curl -XGET 'localhost:9200/formated_sensors/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": { "match": { "bike": "3" } }
+}
+'
+
+#query que torna 10 primers valors i nomès mostra etiqueta result i type
+curl -XGET 'localhost:9200/cleaned_sensors/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": { "match_all": {} },
+  "_source": ["result", "type"]
+}
+'
+#must = AND // should = OR (o un o laltre) // must_not = NOT
+
+curl -XGET 'localhost:9200/test/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "result": "20" } },
+        { "match": { "type": "temperature" } }
+      ],
+      "must_not": [
+        { "match": { "sampling_date": "2018-03-07T12:07:34.000Z" } }
+      ]
+    }
+  }
+}
+'
+
+#query per demanar en uns temps determinats
+curl -XGET 'localhost:9200/cleaned_sensors/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "query": {
+    "bool": {
+      "must": { "match": {"bike":"2"} },
+      "filter": {
+        "range": {
+          "sampling_time": {
+            "gte": "2017-08-13T00:00:00.000Z",
+            "lte": "2017-12-13T23:59:59.000Z"
+          }
+        }
+      }
+	  }
+  }
+}
+'
+
+curl -XGET 'localhost:9200/growsmarter/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "size": 0,
+  "aggs": {
+    "group_by_type": {
+      "terms": {
+        "field": "type.keyword"
+      }
+    }
+  }
+}
+'
+curl -XGET 'localhost:9200/bank/_search?pretty' -H 'Content-Type: application/json' -d'
+{
+  "size": 0,
+  "aggs": {
+    "group_by_type": {
+      "terms": {
+        "field": "type.keyword",
+        "order": {
+          "average_result": "desc"
+        }
+      },
+      "aggs": {
+        "average_result": {
+          "avg": {
+            "field": "balance"
+          }
+        }
+      }
+    }
+  }
+}
+'
+-------------------------(NEEDS MAP)BIKE 2 FILLING QUERY------------
+curl -XPOST 'localhost:9200/_reindex?pretty' -H 'Content-Type: application/json' -d'
+{
+  "source": {
+    "index": "cleaned_sensors",
+    "query": {
+      "bool": {
+        "must": { "match": {"bike":"2"} },
+        "filter": {
+          "range": {
+            "sampling_time": {
+              "gte": "2017-08-13T00:00:00.000Z",
+              "lte": "2017-12-13T23:59:59.000Z"
+            }
+          }
+        }
+      }
+    }
+  },
+  "dest": {
+    "index": "bike2_sensors"
+  }
+}
+'

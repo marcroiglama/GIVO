@@ -1,0 +1,219 @@
+'''MAPPINGS'''
+
+#-------------------------------------RAW_SENSORS------------------------------------------------
+
+curl -XPUT 'localhost:9200/copy_raw_sensors/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "sampling_time": {
+                        "type": "text"
+                    },
+                    "variable": {
+                        "type": "text"
+                    },
+                    "bike": {
+                        "type":"text"
+                    },
+                    "result": {
+                        "type":"text"
+                    },
+                    "location": {
+                        "properties": {
+                            "coordinates": {
+                                "type": "text"
+                            },
+                            "type": {
+                                "type":"text"
+                            }
+                        }                      
+                    }
+            }
+        }
+    }
+}
+'
+
+#-------------------------------------SEMI_RAW_SENSORS------------------------------------------------
+
+curl -XPUT 'localhost:9200/semi_raw_sensors/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "sampling_time": {
+                        "type": "text"
+                    },
+                    "variable": {
+                        "type": "text"
+                    },
+                    "bike": {
+                        "type":"text"
+                    },
+                    "result": {
+                        "type":"text"
+                    },
+                    "location": {
+                        "type": "text" 
+                    }
+            }
+        }
+    }
+}
+'
+
+#-------------------------------------PRECURATED_SENSORS------------------------------------------------
+
+curl -XPUT 'localhost:9200/cleaned_sensors/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "sampling_time": {
+                        "type": "date"
+                    },
+                    "variable": {
+                        "type": "keyword"
+                    },
+                    "bike": {
+                        "type":"keyword"
+                    },
+                    "result": {
+                        "type":"float"
+                    },
+                    "location": {
+                        "type": "geo_point" 
+                    }
+            }
+        }
+    }
+}
+'
+
+#-------------------------------------BIKE2_SENSORS------------------------------------------------
+
+curl -XPUT 'localhost:9200/bike2_sensors/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "sampling_time": {
+                        "type": "date"
+                    },
+                    "variable": {
+                        "type": "keyword"
+                    },
+                    "bike": {
+                        "type":"keyword"
+                    },
+                    "result": {
+                        "type":"float"
+                    },
+                    "location": {
+                        "type": "geo_point" 
+                    }
+            }
+        }
+    }
+}
+'
+#-------------------------------------KIBANA_SENSORS------------------------------------------------
+curl -XPUT 'localhost:9200/test/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "sampling_time": {
+                        "type": "date"
+                    },
+                    "variable": {
+                        "type": "text"
+                    },
+                    "bike": {
+                        "type":"text"
+                    },
+                    "result": {
+                        "type":"text"
+                    },
+                    "location": {
+                        "properties": {
+                            "coordinates": {
+                                "type": "geo_point"
+                            }
+                        }
+                    }
+            }
+        }
+    }
+}
+'
+
+#-------------------------------------CURATED_SENSORS------------------------------------------------
+curl -XPUT 'localhost:9200/curated_sensors/?pretty' -H 'Content-Type: application/json' -d'
+{
+    "mappings":{
+        "IoT":{
+            "properties": {
+                    "timestamp": {
+                        "type": "date"
+                    },
+                    "lat": {
+                        "type": "float"
+                    },
+                    "lon": {
+                        "type":"float"
+                    },
+                    "humidity": {
+                        "type":"float"
+                    },
+                     "so2": {
+                        "type":"float"
+                    },
+                     "Vsense": {
+                        "type":"float"
+                    },
+                     "temperature": {
+                        "type":"float"
+                    },
+                     "h2": {
+                        "type":"float"
+                    },
+                     "ch4": {
+                        "type":"float"
+                    },
+                     "pm": {
+                        "type":"float"
+                    },
+                     "c3h8": {
+                        "type":"float"
+                    },
+                     "co": {
+                        "type":"float"
+                    },
+                     "nh3": {
+                        "type":"float"
+                    },
+                     "o3": {
+                        "type":"float"
+                    },
+                     "editemp": {
+                        "type":"float"
+                    },
+                     "Isense": {
+                        "type":"float"
+                    },
+                     "no2": {
+                        "type":"float"
+                    },
+                     "sound": {
+                        "type":"float"
+                    },
+                     "c4h10": {
+                        "type":"float"
+                    }
+            }
+        }
+    }
+}
+'
