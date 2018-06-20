@@ -7,7 +7,7 @@
 curl 'http://localhost:9200/?pretty' 
 ps -aux | grep "elastic"/
 ----------------------------------------------------------------------------
-                        "format" : ["yyyy-MM-dd'"'T'"'HH:mm:ss.SSSZ"]
+
 #create a new index (it's possible to define some parameters inside)
 curl -XPUT 'localhost:9200/test/?pretty' -H 'Content-Type: application/json' -d'
 {
